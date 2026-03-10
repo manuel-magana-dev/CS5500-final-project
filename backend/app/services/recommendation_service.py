@@ -25,7 +25,18 @@ class EventRecommendationService(ABC):
             parts.append(f"Preferred dates: {request.date_range}.")
         return " ".join(parts)
     def _parse_events(self, content: str) -> list[Event]:
-        return NotImplementedError("Subclasses must implement _parse_events")
+        content = content.strip()
+        if "```" in content:
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+            content = content.strip()
+        start = content.find("[")
+        end = content.rfind("]")
+        if start != -1 and end != -1:
+            content = content[start:end + 1]
+        events_data = json.loads(content)
+        return [Event(**event) for event in events_data] 
     @abstractmethod
     def get_recommendations(self, request: EventRequest) -> list[Event]:
         pass
