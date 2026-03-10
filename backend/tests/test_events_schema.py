@@ -17,7 +17,8 @@ VALID_EVENT_DATA = {
     "tags": ["live-music", "jazz", "nightlife"],
     "source": "Eventbrite",
     "event_url": "https://eventbrite.com/e/jazz-night-123",
-    "event_date": "2026-04-15T20:00:00",
+    "start_time": "2026-04-15T20:00:00",
+    "end_time": "2026-04-15T22:00:00",
     "verified": True,
 }
 

@@ -20,5 +20,6 @@ class Event(BaseModel):
     tags: list[str]
     source: str
     event_url: str
-    event_date: str
+    start_time: str
+    end_time: str
     verified: bool
