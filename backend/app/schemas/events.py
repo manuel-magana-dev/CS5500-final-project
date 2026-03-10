@@ -6,6 +6,8 @@ class EventRequest(BaseModel):
     interests: str = Field(..., description="User interests or event type")
     budget: float | None = Field(None, description="Max budget in USD per person")
     date_range: str | None = Field(None, description="Preferred date range, e.g. '2026-03-15 to 2026-03-20'")
+    day_start_time: str | None = Field(None, description="Preferred start time of day: '09:00', '9AM', '9:30pm'") # 9m, 12pm?
+    day_end_time: str | None = Field(None, description="Preferred end time of day: '21:00', '9PM', '9:30pm'") # 9pm, 2am?
 
 class Event(BaseModel):
     name: str
@@ -19,5 +21,7 @@ class Event(BaseModel):
     source: str
     event_url: str
     start_time: str
+    start_time_as_ampm: str
     end_time: str
+    end_time_as_ampm: str
     verified: bool
