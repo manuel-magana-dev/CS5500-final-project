@@ -1,6 +1,7 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import styles from "./page.module.css";
 
 const features = [
@@ -19,6 +20,36 @@ type PlannerFormData = {
   interests: string;
 };
 
+type PlannerRequestPayload = {
+  location: string;
+  date: string;
+  timeRange: string;
+  budget: number | null;
+  preference: string;
+  interests: string[];
+};
+
+type ItineraryItem = {
+  id: string;
+  time: string;
+  title: string;
+  description: string;
+  category: string;
+  estimatedCost: number | null;
+  address?: string;
+};
+
+type ItineraryResponse = {
+  title: string;
+  date: string;
+  location: string;
+  summary: string;
+  preference: string;
+  budget: number | null;
+  interests: string[];
+  items: ItineraryItem[];
+};
+
 export default function HomePage() {
   const [formData, setFormData] = useState<PlannerFormData>({
     location: "",
@@ -30,6 +61,7 @@ export default function HomePage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [result, setResult] = useState<ItineraryResponse | null>(null);
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -42,7 +74,7 @@ export default function HomePage() {
     }));
   }
 
-  function buildPayload(data: PlannerFormData) {
+  function buildPayload(data: PlannerFormData): PlannerRequestPayload {
     return {
       location: data.location.trim(),
       date: data.date,
@@ -65,12 +97,51 @@ export default function HomePage() {
     try {
       console.log("Planner payload:", payload);
 
-      // TODO: Replace with actual API call
+      // TODO: Replace this mock response with real backend response
+      const mockResponse: ItineraryResponse = {
+        title: `Plan for ${payload.location || "Your Day"}`,
+        date: payload.date,
+        location: payload.location,
+        summary:
+          "A personalized itinerary generated from your preferences, budget, and interests.",
+        preference: payload.preference,
+        budget: payload.budget,
+        interests: payload.interests,
+        items: [
+          {
+            id: "1",
+            time: "10:00 AM",
+            title: "Coffee and breakfast",
+            description: "Start your day with a casual breakfast nearby.",
+            category: "Food",
+            estimatedCost: 15,
+            address: "Nearby cafe",
+          },
+          {
+            id: "2",
+            time: "12:00 PM",
+            title: "Local activity stop",
+            description: "Visit a place that matches your selected interests.",
+            category: "Activity",
+            estimatedCost: 20,
+            address: payload.location || "Selected area",
+          },
+          {
+            id: "3",
+            time: "3:00 PM",
+            title: "Relaxed afternoon activity",
+            description: "Enjoy a flexible activity based on your preference.",
+            category: payload.preference,
+            estimatedCost: payload.budget ? Math.min(payload.budget, 30) : 25,
+            address: payload.location || "Selected area",
+          },
+        ],
+      };
 
-      alert("Form data collected successfully. Check the browser console.");
+      setResult(mockResponse);
     } catch (error) {
       console.error("Submit error:", error);
-      alert("Something went wrong while preparing the request.");
+      alert("Something went wrong while generating the itinerary.");
     } finally {
       setIsSubmitting(false);
     }
@@ -197,6 +268,70 @@ export default function HomePage() {
           </form>
         </div>
       </section>
+
+      {result && (
+        <section className={styles.resultSection}>
+          <div className={styles.resultHeader}>
+            <p className={styles.formEyebrow}>Generated Itinerary</p>
+            <h2 className={styles.resultTitle}>{result.title}</h2>
+            <p className={styles.resultSubtitle}>{result.summary}</p>
+          </div>
+
+          <div className={styles.resultMeta}>
+            <span className={styles.metaPill}>{result.date || "No date"}</span>
+            <span className={styles.metaPill}>
+              {result.location || "No location"}
+            </span>
+            <span className={styles.metaPill}>{result.preference}</span>
+            <span className={styles.metaPill}>
+              Budget: {result.budget === null ? "N/A" : `$${result.budget}`}
+            </span>
+          </div>
+
+          {result.interests.length > 0 && (
+            <div className={styles.interestRow}>
+              {result.interests.map((interest) => (
+                <span key={interest} className={styles.interestTag}>
+                  {interest}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className={styles.resultList}>
+            {result.items.map((item) => (
+              <article key={item.id} className={styles.resultCard}>
+                <div className={styles.resultTime}>{item.time}</div>
+
+                <div className={styles.resultContent}>
+                  <div className={styles.resultTopRow}>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p className={styles.resultCategory}>{item.category}</p>
+                    </div>
+
+                    <span className={styles.resultCost}>
+                      {item.estimatedCost === null
+                        ? "N/A"
+                        : item.estimatedCost === 0
+                          ? "Free"
+                          : `$${item.estimatedCost}`}
+                    </span>
+                  </div>
+
+                  <p className={styles.resultDescription}>{item.description}</p>
+
+                  {item.address && (
+                    <p className={styles.resultAddress}>
+                      <span>Location:</span> {item.address}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

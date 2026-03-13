@@ -2,236 +2,233 @@
   min-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 24px 80px;
+  padding: 56px 24px 96px;
 }
 
-.hero {
-  display: grid;
-  grid-template-columns: 1.4fr 0.9fr;
-  gap: 24px;
-  align-items: stretch;
-  margin-top: 20px;
+.headerSection {
+  max-width: 760px;
 }
 
 .eyebrow {
+  margin: 0 0 12px;
   color: #6366f1;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.82rem;
-  margin-bottom: 10px;
 }
 
-.hero h1 {
+.title {
   margin: 0;
-  font-size: clamp(2.2rem, 4vw, 3.4rem);
-  line-height: 1.05;
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  line-height: 1.02;
   letter-spacing: -0.04em;
   color: #0f172a;
 }
 
-.description {
+.subtitle {
   margin-top: 16px;
-  max-width: 650px;
-  color: #475569;
-  line-height: 1.7;
+  color: #64748b;
+  line-height: 1.8;
   font-size: 1.05rem;
-}
-
-.summaryCard {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  color: white;
-  border-radius: 28px;
-  padding: 28px;
-  box-shadow: 0 24px 60px rgba(79, 70, 229, 0.24);
-}
-
-.summaryLabel {
-  display: inline-block;
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 800;
-  opacity: 0.9;
-  margin-bottom: 12px;
-}
-
-.summaryCard h2 {
-  margin: 0 0 10px;
-  letter-spacing: -0.03em;
-}
-
-.summaryCard p {
-  margin: 0;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.92);
 }
 
 .contentGrid {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 24px;
-  margin-top: 32px;
+  margin-top: 36px;
+  align-items: start;
 }
 
 .filterCard,
-.timelineCard {
-  background: rgba(255, 255, 255, 0.84);
+.listSection {
+  background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 28px;
   padding: 24px;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.04);
 }
 
-.filterCard h3,
-.timelineHeader h3 {
-  margin: 0;
+.filterTitle {
+  margin: 0 0 18px;
   color: #0f172a;
+  font-size: 1.2rem;
 }
 
-.filterGroup {
+.fieldGroup {
   display: grid;
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 16px;
 }
 
-.filterGroup label {
-  font-size: 0.92rem;
+.fieldGroup label {
+  font-size: 0.94rem;
   font-weight: 700;
   color: #334155;
 }
 
-.filterGroup input,
-.filterGroup select {
+.fieldGroup input,
+.fieldGroup select {
   width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 14px;
-  padding: 12px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 16px;
+  padding: 13px 14px;
   font-size: 0.98rem;
   outline: none;
   background: white;
   color: #0f172a;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.filterGroup input:focus,
-.filterGroup select:focus {
+.fieldGroup input:focus,
+.fieldGroup select:focus {
   border-color: #6366f1;
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
 }
 
-.actionButton,
-.secondaryButton {
-  border: none;
+.resetButton {
+  width: 100%;
+  margin-top: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 999px;
-  padding: 13px 18px;
+  padding: 13px 16px;
+  background: white;
+  color: #0f172a;
   font-weight: 700;
   cursor: pointer;
   transition:
     transform 0.2s ease,
-    opacity 0.2s ease;
+    background 0.2s ease;
 }
 
-.actionButton {
-  margin-top: 22px;
-  width: 100%;
-  background: #0f172a;
-  color: white;
-}
-
-.secondaryButton {
-  background: #eef2ff;
-  color: #4338ca;
-}
-
-.actionButton:hover,
-.secondaryButton:hover {
+.resetButton:hover {
   transform: translateY(-1px);
+  background: #f8fafc;
 }
 
-.timelineHeader {
+.resultsHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  margin-bottom: 18px;
 }
 
-.timeline {
-  margin-top: 20px;
-  display: grid;
-  gap: 14px;
-}
-
-.item {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 18px;
-  padding: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 20px;
-  background: #ffffff;
-}
-
-.time {
-  font-weight: 800;
-  color: #4f46e5;
-}
-
-.itemContent h4 {
+.resultsHeader h2 {
   margin: 0;
   color: #0f172a;
-  font-size: 1.05rem;
+  font-size: 1.3rem;
 }
 
-.itemContent p {
-  margin: 8px 0 0;
-  color: #475569;
+.resultsCount {
+  color: #64748b;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.cardList {
+  display: grid;
+  gap: 18px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  padding: 22px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardTop h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.15rem;
+}
+
+.summary {
+  margin: 10px 0 0;
+  color: #64748b;
   line-height: 1.7;
 }
 
-.itemTopRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.tag {
+.statusTag {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
   padding: 8px 12px;
-  background: #f8fafc;
-  color: #334155;
   border-radius: 999px;
-  font-size: 0.82rem;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.metaPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: #334155;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.emptyState {
+  border: 1px dashed rgba(15, 23, 42, 0.14);
+  border-radius: 24px;
+  padding: 32px 20px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.emptyState h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.emptyState p {
+  margin: 10px 0 0;
+  color: #64748b;
+}
+
 @media (max-width: 980px) {
-  .hero,
   .contentGrid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .page {
-    padding: 24px 16px 60px;
+    padding: 28px 16px 64px;
   }
 
   .filterCard,
-  .timelineCard,
-  .summaryCard {
-    padding: 18px;
+  .listSection {
+    padding: 20px;
+    border-radius: 24px;
   }
 
-  .timelineHeader {
-    align-items: flex-start;
+  .cardTop,
+  .resultsHeader {
     flex-direction: column;
-  }
-
-  .item {
-    grid-template-columns: 1fr;
+    align-items: flex-start;
   }
 }

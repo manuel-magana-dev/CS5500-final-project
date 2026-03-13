@@ -1,117 +1,155 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import styles from "./page.module.css";
 
-const itineraryItems = [
+type HistoryItem = {
+  id: string;
+  title: string;
+  date: string;
+  location: string;
+  summary: string;
+  preference: "Indoor" | "Outdoor" | "Mixed";
+};
+
+const historyItems: HistoryItem[] = [
   {
-    time: "09:30 AM",
-    title: "Coffee and light breakfast",
-    description: "Start the day at a nearby cafe with a relaxed morning setup.",
-    tag: "Food",
+    id: "1",
+    title: "Weekend Plan in San Francisco",
+    date: "2026-03-14",
+    location: "San Francisco",
+    summary: "Outdoor-focused day with food, art, and scenic stops.",
+    preference: "Outdoor",
   },
   {
-    time: "11:00 AM",
-    title: "Outdoor walk and local exploration",
-    description:
-      "Visit a park, waterfront, or neighborhood spot that matches the user preference.",
-    tag: "Outdoor",
+    id: "2",
+    title: "Sunday Plan in Berkeley",
+    date: "2026-03-21",
+    location: "Berkeley",
+    summary: "Relaxed indoor and cafe itinerary with flexible timing.",
+    preference: "Indoor",
   },
   {
-    time: "01:30 PM",
-    title: "Lunch reservation",
-    description:
-      "Choose a place based on cuisine preference, budget, and distance.",
-    tag: "Dining",
+    id: "3",
+    title: "Day Plan in Palo Alto",
+    date: "2026-03-28",
+    location: "Palo Alto",
+    summary: "Nature walk, lunch stop, and evening activity.",
+    preference: "Mixed",
   },
   {
-    time: "03:30 PM",
-    title: "Weekend event or activity",
-    description:
-      "Attend a selected event pulled from event sources and ranked by fit.",
-    tag: "Event",
-  },
-  {
-    time: "06:30 PM",
-    title: "Dinner and evening plan",
-    description: "Wrap up the day with a social or relaxing activity nearby.",
-    tag: "Evening",
+    id: "4",
+    title: "Saturday Plan in San Jose",
+    date: "2026-04-04",
+    location: "San Jose",
+    summary: "Museum visit, lunch, and evening downtown walk.",
+    preference: "Mixed",
   },
 ];
 
 export default function ItineraryPage() {
+  const [search, setSearch] = useState("");
+  const [preferenceFilter, setPreferenceFilter] = useState("All");
+
+  const filteredItems = useMemo(() => {
+    return historyItems.filter((item) => {
+      const matchesSearch =
+        item.title.toLowerCase().includes(search.toLowerCase()) ||
+        item.location.toLowerCase().includes(search.toLowerCase()) ||
+        item.summary.toLowerCase().includes(search.toLowerCase());
+
+      const matchesPreference =
+        preferenceFilter === "All" || item.preference === preferenceFilter;
+
+      return matchesSearch && matchesPreference;
+    });
+  }, [search, preferenceFilter]);
+
   return (
     <main className={styles.page}>
-      <section className={styles.hero}>
-        <div>
-          <p className={styles.eyebrow}>Weekend Planner</p>
-          <h1>Your Suggested Itinerary</h1>
-          <p className={styles.description}>
-            This page can display ranked activities, timing, and a structured
-            plan generated from user preferences.
-          </p>
-        </div>
-
-        <div className={styles.summaryCard}>
-          <span className={styles.summaryLabel}>Plan Summary</span>
-          <h2>Saturday in San Francisco</h2>
-          <p>
-            Outdoor-focused, medium budget, walkable schedule, food included.
-          </p>
-        </div>
+      <section className={styles.headerSection}>
+        <p className={styles.eyebrow}>Itinerary History</p>
+        <h1 className={styles.title}>Your saved plans</h1>
+        <p className={styles.subtitle}>
+          Browse previously generated itineraries and filter them by keyword or
+          preference.
+        </p>
       </section>
 
       <section className={styles.contentGrid}>
         <aside className={styles.filterCard}>
-          <h3>Filters</h3>
+          <h2 className={styles.filterTitle}>Filters</h2>
 
-          <div className={styles.filterGroup}>
-            <label>Location</label>
-            <input type="text" placeholder="Enter city" />
+          <div className={styles.fieldGroup}>
+            <label htmlFor="search">Search</label>
+            <input
+              id="search"
+              type="text"
+              placeholder="Search by title"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
           </div>
 
-          <div className={styles.filterGroup}>
-            <label>Time Range</label>
-            <input type="text" placeholder="Saturday 10:00 AM - 8:00 PM" />
-          </div>
-
-          <div className={styles.filterGroup}>
-            <label>Preference</label>
-            <select defaultValue="Outdoor">
-              <option>Outdoor</option>
-              <option>Indoor</option>
-              <option>Mixed</option>
+          <div className={styles.fieldGroup}>
+            <label htmlFor="preference">Preference</label>
+            <select
+              id="preference"
+              value={preferenceFilter}
+              onChange={(event) => setPreferenceFilter(event.target.value)}
+            >
+              <option value="All">All</option>
+              <option value="Indoor">Indoor</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Mixed">Mixed</option>
             </select>
           </div>
 
-          <button className={styles.actionButton}>Regenerate Plan</button>
+          <button
+            type="button"
+            className={styles.resetButton}
+            onClick={() => {
+              setSearch("");
+              setPreferenceFilter("All");
+            }}
+          >
+            Reset Filters
+          </button>
         </aside>
 
-        <section className={styles.timelineCard}>
-          <div className={styles.timelineHeader}>
-            <div>
-              <p className={styles.eyebrow}>Generated Schedule</p>
-              <h3>Daily Timeline</h3>
+        <section className={styles.listSection}>
+          <div className={styles.resultsHeader}>
+            <h2>Results</h2>
+            <span className={styles.resultsCount}>
+              {filteredItems.length} plan{filteredItems.length === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          {filteredItems.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h3>No itineraries found</h3>
+              <p>Try changing your filters or search terms.</p>
             </div>
-
-            <button className={styles.secondaryButton}>Export ICS</button>
-          </div>
-
-          <div className={styles.timeline}>
-            {itineraryItems.map((item) => (
-              <article
-                key={`${item.time}-${item.title}`}
-                className={styles.item}
-              >
-                <div className={styles.time}>{item.time}</div>
-
-                <div className={styles.itemContent}>
-                  <div className={styles.itemTopRow}>
-                    <h4>{item.title}</h4>
-                    <span className={styles.tag}>{item.tag}</span>
+          ) : (
+            <div className={styles.cardList}>
+              {filteredItems.map((item) => (
+                <article key={item.id} className={styles.card}>
+                  <div className={styles.cardTop}>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p className={styles.summary}>{item.summary}</p>
+                    </div>
                   </div>
-                  <p>{item.description}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+
+                  <div className={styles.metaRow}>
+                    <span className={styles.metaPill}>{item.date}</span>
+                    <span className={styles.metaPill}>{item.location}</span>
+                    <span className={styles.metaPill}>{item.preference}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </section>
     </main>
