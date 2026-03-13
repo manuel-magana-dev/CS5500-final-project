@@ -67,22 +67,8 @@ export default function HomePage() {
 
             <div className={styles.twoColumn}>
               <div className={styles.fieldGroup}>
-                <label htmlFor="budgetMin">Budget Range</label>
-                <div className={styles.rangeRow}>
-                  <input
-                    id="budgetMin"
-                    type="number"
-                    placeholder="Min"
-                    min="0"
-                  />
-                  <span className={styles.rangeDivider}>—</span>
-                  <input
-                    id="budgetMax"
-                    type="number"
-                    placeholder="Max"
-                    min="0"
-                  />
-                </div>
+                <label htmlFor="budget">Budget</label>
+                <input id="budget" type="number" placeholder="50" min="0" />
               </div>
 
               <div className={styles.fieldGroup}>
@@ -101,15 +87,6 @@ export default function HomePage() {
                 id="interests"
                 type="text"
                 placeholder="Food, art, music, nature"
-              />
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label htmlFor="notes">Notes</label>
-              <textarea
-                id="notes"
-                rows={4}
-                placeholder="Add any preferences or constraints"
               />
             </div>
 
