@@ -9,7 +9,8 @@ import styles from "./page.module.css";
 // Backend API base URL (e.g. Django / FastAPI on port 8000)
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-const SIGNUP_ENDPOINT = `${API_BASE}/api/auth/signup`;
+// Backend auth register is POST /auth/register
+const SIGNUP_ENDPOINT = `${API_BASE}/auth/register`;
 
 const INTEREST_OPTIONS = [
   "Food & dining",
@@ -103,43 +104,39 @@ export default function SignUpPage() {
     setFieldErrors({});
     setIsSubmitting(true);
 
+    // Backend expects UserCreate: username, email, password, name (optional)
+    const username = email.trim().split("@")[0] || email.trim() || "user";
     const payload = {
+      username,
       email: email.trim(),
       password,
-      preferences: {
-        interests,
-        environment,
-        dietaryRestrictions: dietaryRestrictions.trim() || null,
-        accessibility: accessibility.trim() || null,
-        otherRestrictions: otherRestrictions.trim() || null,
-      },
+      name: null as string | null,
     };
 
     try {
-      // TODO: uncomment when backend is ready
-      // const response = await fetch(SIGNUP_ENDPOINT, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(payload),
-      // });
-      // const data = await response.json().catch(() => ({}));
-      // if (!response.ok) {
-      //   const message =
-      //     typeof data.detail === "string"
-      //       ? data.detail
-      //       : Array.isArray(data.detail)
-      //         ? data.detail[0]?.msg ?? "Sign up failed"
-      //         : "Sign up failed. Please try again.";
-      //   setErrorMessage(message);
-      //   return;
-      // }
-      // router.push("/login");
-      // router.refresh();
-
-      // Mock: no backend yet — log and redirect to login
-      console.log("Signup payload (no backend):", payload);
+      const response = await fetch(SIGNUP_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof data.detail === "string"
+            ? data.detail
+            : Array.isArray(data.detail)
+              ? data.detail[0]?.msg ?? "Sign up failed"
+              : "Sign up failed. Please try again.";
+        setErrorMessage(message);
+        return;
+      }
+      // Optional: auto sign in with returned token
+      if (data.access_token && data.user) {
+        // Could use setAuth here if you import useAuth
+        // setAuth({ user: { id: String(data.user.id), username: data.user.username, email: data.user.email }, token: data.access_token });
+      }
       router.push("/login");
       router.refresh();
     } catch (error) {
