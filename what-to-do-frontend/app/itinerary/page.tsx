@@ -59,6 +59,7 @@ export default function ItineraryPage() {
   const [preferenceFilter, setPreferenceFilter] = useState("All");
   const [items, setItems] = useState<HistoryItem[]>([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [isDeletingId, setIsDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadItineraries() {
@@ -105,6 +106,43 @@ export default function ItineraryPage() {
       loadItineraries();
     }
   }, [isLoggedIn, isLoading, token]);
+
+  async function handleDeleteItinerary(itemId: string) {
+    if (!token) {
+      alert("Please log in to delete saved plans.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this saved itinerary?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeletingId(itemId);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/saved/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          ...getAuthHeaders(token),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete saved itinerary");
+      }
+
+      setItems((prev) => prev.filter((item) => item.id !== itemId));
+    } catch (error) {
+      console.error("Failed to delete itinerary:", error);
+      alert("Something went wrong while deleting the itinerary.");
+    } finally {
+      setIsDeletingId(null);
+    }
+  }
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -197,22 +235,35 @@ export default function ItineraryPage() {
             </div>
           ) : (
             <div className={styles.cardList}>
-              {filteredItems.map((item) => (
-                <article key={item.id} className={styles.card}>
-                  <div className={styles.cardTop}>
-                    <div>
-                      <h3>{item.title}</h3>
-                      <p className={styles.summary}>{item.summary}</p>
-                    </div>
-                  </div>
+              {filteredItems.map((item) => {
+                const isDeleting = isDeletingId === item.id;
 
-                  <div className={styles.metaRow}>
-                    <span className={styles.metaPill}>{item.date}</span>
-                    <span className={styles.metaPill}>{item.location}</span>
-                    <span className={styles.metaPill}>{item.preference}</span>
-                  </div>
-                </article>
-              ))}
+                return (
+                  <article key={item.id} className={styles.card}>
+                    <div className={styles.cardTop}>
+                      <div>
+                        <h3>{item.title}</h3>
+                        <p className={styles.summary}>{item.summary}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        className={styles.deleteButton}
+                        onClick={() => handleDeleteItinerary(item.id)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </div>
+
+                    <div className={styles.metaRow}>
+                      <span className={styles.metaPill}>{item.date}</span>
+                      <span className={styles.metaPill}>{item.location}</span>
+                      <span className={styles.metaPill}>{item.preference}</span>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
