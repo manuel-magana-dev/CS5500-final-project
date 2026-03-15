@@ -9,7 +9,9 @@ import styles from "./page.module.css";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-const LOGIN_ENDPOINT = `${API_BASE}/api/auth/login`;
+// Backend auth is under /auth (e.g. POST /auth/login)
+const LOGIN_ENDPOINT = `${API_BASE}/auth/login`;
+const FETCH_TIMEOUT_MS = 12_000;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -56,34 +58,37 @@ export default function LoginPage() {
     };
 
     try {
-      // TODO: uncomment when backend is ready
-      // const response = await fetch(LOGIN_ENDPOINT, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(payload),
-      // });
-      // const data = await response.json().catch(() => ({}));
-      // if (!response.ok) {
-      //   const message =
-      //     typeof data.detail === "string"
-      //       ? data.detail
-      //       : Array.isArray(data.detail)
-      //         ? data.detail[0]?.msg ?? "Invalid credentials"
-      //         : "Invalid credentials. Please try again.";
-      //   setErrorMessage(message);
-      //   return;
-      // }
-      // if (data.access_token && data.user) {
-      //   setAuth({
-      //     user: { id: String(data.user.id), username: data.user.username, email: data.user.email },
-      //     token: data.access_token,
-      //   });
-      //   router.push("/");
-      //   router.refresh();
-      //   return;
-      // }
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+      const response = await fetch(LOGIN_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof data.detail === "string"
+            ? data.detail
+            : Array.isArray(data.detail)
+              ? data.detail[0]?.msg ?? "Invalid credentials"
+              : "Invalid credentials. Please try again.";
+        setErrorMessage(message);
+        return;
+      }
+      if (data.access_token && data.user) {
+        setAuth({
+          user: { id: String(data.user.id), username: data.user.username, email: data.user.email },
+          token: data.access_token,
+        });
+        router.push("/");
+        router.refresh();
+        return;
+      }
 
       // Mock: no backend yet — set auth state and user, then redirect
       const mockId = "user-" + (username.trim() || "mock").toLowerCase().replace(/\s+/g, "-");

@@ -117,26 +117,26 @@ export default function SignUpPage() {
 
     try {
       // TODO: uncomment when backend is ready
-      // const response = await fetch(SIGNUP_ENDPOINT, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(payload),
-      // });
-      // const data = await response.json().catch(() => ({}));
-      // if (!response.ok) {
-      //   const message =
-      //     typeof data.detail === "string"
-      //       ? data.detail
-      //       : Array.isArray(data.detail)
-      //         ? data.detail[0]?.msg ?? "Sign up failed"
-      //         : "Sign up failed. Please try again.";
-      //   setErrorMessage(message);
-      //   return;
-      // }
-      // router.push("/login");
-      // router.refresh();
+      const response = await fetch(SIGNUP_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message =
+          typeof data.detail === "string"
+            ? data.detail
+            : Array.isArray(data.detail)
+              ? data.detail[0]?.msg ?? "Sign up failed"
+              : "Sign up failed. Please try again.";
+        setErrorMessage(message);
+        return;
+      }
+      router.push("/login");
+      router.refresh();
 
       // Mock: no backend yet — log and redirect to login
       console.log("Signup payload (no backend):", payload);
