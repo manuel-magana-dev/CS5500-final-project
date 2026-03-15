@@ -2,10 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import styles from "./page.module.css";
+import { useAuth } from "../contexts/AuthContext";
 
-type AuthUser = {
-  id: string;
-} | null;
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
 
 type HistoryItem = {
   id: string;
@@ -16,81 +16,95 @@ type HistoryItem = {
   preference: "Indoor" | "Outdoor" | "Mixed";
 };
 
+type SavedEventApiItem = {
+  id: number;
+  user_id: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  tag: string;
+  price: string;
+  saved_at: string;
+};
+
+function getAuthHeaders(token: string | null): Record<string, string> {
+  if (!token) {
+    return {};
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+function mapTagToPreference(tag: string): "Indoor" | "Outdoor" | "Mixed" {
+  const normalized = tag.toLowerCase();
+
+  if (normalized.includes("indoor")) {
+    return "Indoor";
+  }
+
+  if (normalized.includes("outdoor")) {
+    return "Outdoor";
+  }
+
+  return "Mixed";
+}
+
 export default function ItineraryPage() {
+  const { isLoggedIn, isLoading, token } = useAuth();
+
   const [search, setSearch] = useState("");
   const [preferenceFilter, setPreferenceFilter] = useState("All");
   const [items, setItems] = useState<HistoryItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Replace this with real auth state later
-  const [user] = useState<AuthUser>({
-    id: "user_123",
-  });
+  const [isFetching, setIsFetching] = useState(false);
 
   useEffect(() => {
     async function loadItineraries() {
-      if (!user?.id) {
+      if (!isLoggedIn || !token) {
         setItems([]);
         return;
       }
 
-      setIsLoading(true);
+      setIsFetching(true);
 
       try {
-        // TODO: Replace this with real API call to fetch itineraries for the user
-        // const response = await fetch(`/api/itineraries?userId=${user.id}`);
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch itineraries");
-        // }
-        // const data: HistoryItem[] = await response.json();
-        // setItems(data);
+        const response = await fetch(`${API_BASE_URL}/saved`, {
+          method: "GET",
+          headers: {
+            ...getAuthHeaders(token),
+          },
+        });
 
-        const mockData: HistoryItem[] = [
-          {
-            id: "1",
-            title: "Weekend Plan in San Francisco",
-            date: "2026-03-14",
-            location: "San Francisco",
-            summary: "Outdoor-focused day with food, art, and scenic stops.",
-            preference: "Outdoor",
-          },
-          {
-            id: "2",
-            title: "Sunday Plan in Berkeley",
-            date: "2026-03-21",
-            location: "Berkeley",
-            summary: "Relaxed indoor and cafe itinerary with flexible timing.",
-            preference: "Indoor",
-          },
-          {
-            id: "3",
-            title: "Day Plan in Palo Alto",
-            date: "2026-03-28",
-            location: "Palo Alto",
-            summary: "Nature walk, lunch stop, and evening activity.",
-            preference: "Mixed",
-          },
-          {
-            id: "4",
-            title: "Saturday Plan in San Jose",
-            date: "2026-04-04",
-            location: "San Jose",
-            summary: "Museum visit, lunch, and evening downtown walk.",
-            preference: "Mixed",
-          },
-        ];
+        if (!response.ok) {
+          throw new Error("Failed to fetch saved itineraries");
+        }
 
-        setItems(mockData);
+        const data: SavedEventApiItem[] = await response.json();
+
+        const mappedItems: HistoryItem[] = data.map((item) => ({
+          id: String(item.id),
+          title: item.title,
+          date: item.date,
+          location: item.location,
+          summary: `${item.time} • ${item.tag} • ${item.price}`,
+          preference: mapTagToPreference(item.tag),
+        }));
+
+        setItems(mappedItems);
       } catch (error) {
         console.error("Failed to load itineraries:", error);
         setItems([]);
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
       }
     }
 
-    loadItineraries();
-  }, [user]);
+    if (!isLoading) {
+      loadItineraries();
+    }
+  }, [isLoggedIn, isLoading, token]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -166,12 +180,12 @@ export default function ItineraryPage() {
             </span>
           </div>
 
-          {!user ? (
+          {!isLoggedIn ? (
             <div className={styles.emptyState}>
               <h3>No saved itineraries</h3>
               <p>Please log in to view your saved plans.</p>
             </div>
-          ) : isLoading ? (
+          ) : isLoading || isFetching ? (
             <div className={styles.emptyState}>
               <h3>Loading itineraries</h3>
               <p>Please wait while your saved plans are loading.</p>
