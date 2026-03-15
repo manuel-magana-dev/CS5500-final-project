@@ -61,6 +61,7 @@ export default function HomePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<ItineraryResponse | null>(null);
   const [savedActivityIds, setSavedActivityIds] = useState<string[]>([]);
+  const [isLoggedIn] = useState(false);
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -145,7 +146,7 @@ export default function HomePage() {
       setResult(mockResponse);
       setSavedActivityIds([]);
 
-      // Real backend example:
+      // TODO: Replace this with real API call
       // const response = await fetch("http://localhost:8000/api/plan", {
       //   method: "POST",
       //   headers: {
@@ -170,6 +171,11 @@ export default function HomePage() {
   }
 
   function handleToggleSave(activity: ItineraryActivity) {
+    if (!isLoggedIn) {
+      alert("Please log in to save activities.");
+      return;
+    }
+
     const isSaved = savedActivityIds.includes(activity.id);
 
     if (isSaved) {
@@ -370,7 +376,11 @@ export default function HomePage() {
                           }
                           onClick={() => handleToggleSave(activity)}
                         >
-                          {isSaved ? "Remove" : "Save"}
+                          {!isLoggedIn
+                            ? "Log in to save"
+                            : isSaved
+                              ? "Remove"
+                              : "Save"}
                         </button>
                       </div>
                     </div>
