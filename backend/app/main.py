@@ -9,7 +9,12 @@ Routers:
 from fastapi import FastAPI
 from .middleware.cors import add_cors_middleware
 from .routers import health, events
+from .routers.auth import router as auth_router
+from .routers.saved import router as saved_router
+from .db.database import engine, Base
 
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 add_cors_middleware(app)
@@ -20,3 +25,5 @@ def root():
     return {"app": "WhatToDo API"}
 app.include_router(health.router)
 app.include_router(events.router)
+app.include_router(auth_router)
+app.include_router(saved_router)
