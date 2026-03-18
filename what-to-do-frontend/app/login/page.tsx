@@ -7,8 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import styles from "./page.module.css";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 // Backend auth is under /auth (e.g. POST /auth/login)
 const LOGIN_ENDPOINT = `${API_BASE}/auth/login`;
 const FETCH_TIMEOUT_MS = 12_000;

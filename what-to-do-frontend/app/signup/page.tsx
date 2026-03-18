@@ -7,8 +7,7 @@ import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
 // Backend API base URL (e.g. Django / FastAPI on port 8000)
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 // Backend auth register is POST /auth/register
 const SIGNUP_ENDPOINT = `${API_BASE}/auth/register`;
 
