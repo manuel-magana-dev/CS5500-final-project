@@ -33,6 +33,7 @@ jobs:
 
     - name: Build, tag, and push image to Amazon ECR Public
       run: |
+        cd backend
         docker build -t group_project . --no-cache
         docker tag group_project:latest public.ecr.aws/t1u7o7g8/group_project:test
         docker push public.ecr.aws/t1u7o7g8/group_project:test
