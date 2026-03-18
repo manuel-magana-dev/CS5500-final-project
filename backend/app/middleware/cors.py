@@ -10,8 +10,10 @@ origins = [
     "http://localhost:8080",
     "http://localhost:3000",
     "http://localhost:3002",
-    "https://cs-5500-final-project-ybji.vercel.app/"
-    "https://cs-5500-final-project-ybji-manuel-magana-devs-projects.vercel.app"
+    "https://cs-5500-final-project-ybji.vercel.app",
+    "https://cs-5500-final-project-ybji-manuel-magana-devs-projects.vercel.app",
+    "https://cs-5500-final-project-ybji-git-main-manuel-magana-devs-projects.vercel.app",
+    "https://vercel.live",
 ]
 
 def add_cors_middleware(app: FastAPI):
