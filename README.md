@@ -155,6 +155,8 @@ Deployment and final documentation/demo
 The application API is hosted on AWS apprunner, and the frontend is hosted on Vercel. The backend API is accessible at `https://bmjumiukye.us-east-1.awsapprunner.com/`, and the frontend is accessible at `https://what-to-do-app-two.vercel.app/`. The database is hosted on AWS RDS, and the email service is configured using AWS SES.
 
 
+
+
 The workflow for deployment includes:
 1. **Development**: Code is developed locally and pushed to GitHub.
 2. **CI/CD**: GitHub Actions are set up to automatically pushes the image to AWS ECR. The image must be deployed manually to AWS App Runner.
